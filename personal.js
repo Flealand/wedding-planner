@@ -9,26 +9,27 @@
     return node;
   }
 
-  const ICON_SRC = { vegan: "icons/vegan.png", veggie: "icons/tomato.svg" };
+  const ICON_SRC = { vegan: "icons/vegan.png", veggie: "icons/tomato.svg", child: "icons/star.svg" };
+  const BADGE_LABEL = { vegan: "Vegan", veggie: "Vegetarisch", child: "Kind" };
 
   const guestsByTable = Object.fromEntries(TABLES.map((t) => [t.id, []]));
   GUESTS.forEach((g) => guestsByTable[g.table].push(g));
 
-  function dietClass(g) {
-    if (g.isVegan) return "vegan";
-    if (g.isVeggie) return "veggie";
-    return null;
+  // A guest can be a child AND vegan/veggie at once, so this returns however
+  // many badges apply — a seat may need more than one marker.
+  function badgeClasses(g) {
+    const classes = [];
+    if (g.isChild) classes.push("child");
+    if (g.isVegan) classes.push("vegan");
+    else if (g.isVeggie) classes.push("veggie");
+    return classes;
   }
 
-  function dietLabel(cls) {
-    return cls === "vegan" ? "Vegan" : "Vegetarisch";
+  function badgeIconImg(cls) {
+    return `<img class="diet-icon" src="${ICON_SRC[cls]}" alt="${BADGE_LABEL[cls]}">`;
   }
 
-  function dietIconImg(cls) {
-    return `<img class="diet-icon" src="${ICON_SRC[cls]}" alt="${dietLabel(cls)}">`;
-  }
-
-  // ---------- Big overview: one marker per colored seat ----------
+  // ---------- Big overview: one marker group per seat that needs one ----------
   // Markers sit INSET just inside the table's own shape (pulled back in from
   // whichever edge the seat faces) instead of floating in the gap between
   // tables, so a marker is always visually "inside" the table it belongs to
@@ -75,35 +76,38 @@
 
       t.seats.forEach((seat, i) => {
         const occupant = guestsByTable[t.id].find((g) => g.seat === i);
-        const cls = occupant ? dietClass(occupant) : null;
-        if (!cls) return;
+        const classes = occupant ? badgeClasses(occupant) : [];
+        if (classes.length === 0) return;
         const pos = insetSeatPosition(seat);
-        renderOverviewMarker(svg, pos.x, pos.y, cls);
+        renderBadgeGroup(svg, pos.x, pos.y, classes, classes.length > 1 ? 12 : 15, 3);
       });
     });
   }
 
-  function renderOverviewMarker(svg, cx, cy, cls) {
-    const iconSize = 15;
-    svg.appendChild(el("circle", { class: "overview-badge-backdrop", cx, cy, r: iconSize / 2 + 2 }));
-    svg.appendChild(
-      el("image", {
-        href: ICON_SRC[cls],
-        x: cx - iconSize / 2,
-        y: cy - iconSize / 2,
-        width: iconSize,
-        height: iconSize,
-      })
-    );
+  // Lays out 1+ small badge icons centered on (cx, cy), each on its own
+  // neutral backdrop circle (works regardless of what's behind it — a
+  // table's own color, in the overview).
+  function renderBadgeGroup(svg, cx, cy, classes, iconSize, gap) {
+    const step = iconSize + gap;
+    let x = cx - ((classes.length - 1) * step) / 2;
+    classes.forEach((cls) => {
+      svg.appendChild(el("circle", { class: "overview-badge-backdrop", cx: x, cy, r: iconSize / 2 + 2 }));
+      svg.appendChild(
+        el("image", { href: ICON_SRC[cls], x: x - iconSize / 2, y: cy - iconSize / 2, width: iconSize, height: iconSize })
+      );
+      x += step;
+    });
   }
 
   function renderSummary() {
     const totalVegan = GUESTS.filter((g) => g.isVegan).length;
     const totalVeggie = GUESTS.filter((g) => g.isVeggie).length;
+    const totalChild = GUESTS.filter((g) => g.isChild).length;
     summaryEl.innerHTML = `
       <div class="staff-stat"><strong>${GUESTS.length}</strong><span>Gäste gesamt</span></div>
       <div class="staff-stat staff-stat-vegan"><strong>${totalVegan}</strong><span>Vegan</span></div>
       <div class="staff-stat staff-stat-veggie"><strong>${totalVeggie}</strong><span>Vegetarisch</span></div>
+      <div class="staff-stat staff-stat-child"><strong>${totalChild}</strong><span>Kinder</span></div>
     `;
   }
 
@@ -139,27 +143,26 @@
 
     table.seats.forEach((seat, i) => {
       const occupant = specialBySeat[i];
-      const cls = occupant ? dietClass(occupant) : null;
-      svg.appendChild(
-        el("circle", {
-          class: "staff-seat-circle" + (cls ? ` staff-seat-${cls}` : ""),
-          cx: seat.x,
-          cy: seat.y,
-          r: cls ? 15 : 6,
-        })
-      );
-      if (cls) {
-        const iconSize = 20;
-        svg.appendChild(
-          el("image", {
-            href: ICON_SRC[cls],
-            x: seat.x - iconSize / 2,
-            y: seat.y - iconSize / 2,
-            width: iconSize,
-            height: iconSize,
-          })
-        );
+      const classes = occupant ? badgeClasses(occupant) : [];
+
+      if (classes.length === 0) {
+        svg.appendChild(el("circle", { class: "staff-seat-circle", cx: seat.x, cy: seat.y, r: 6 }));
+      } else {
+        const iconSize = classes.length > 1 ? 16 : 20;
+        const gap = 4;
+        const step = iconSize + gap;
+        let x = seat.x - ((classes.length - 1) * step) / 2;
+        classes.forEach((cls) => {
+          svg.appendChild(
+            el("circle", { class: `staff-seat-circle staff-seat-${cls}`, cx: x, cy: seat.y, r: iconSize / 2 + 3 })
+          );
+          svg.appendChild(
+            el("image", { href: ICON_SRC[cls], x: x - iconSize / 2, y: seat.y - iconSize / 2, width: iconSize, height: iconSize })
+          );
+          x += step;
+        });
       }
+
       if (!occupant) return;
       let lx = seat.x,
         ly = seat.y,
@@ -192,9 +195,10 @@
 
   function renderTableCard(table) {
     const guests = guestsByTable[table.id];
-    const special = guests.filter((g) => dietClass(g));
+    const special = guests.filter((g) => badgeClasses(g).length > 0);
     const veganCount = special.filter((g) => g.isVegan).length;
     const veggieCount = special.filter((g) => g.isVeggie).length;
+    const childCount = special.filter((g) => g.isChild).length;
 
     const card = document.createElement("div");
     card.className = "staff-card";
@@ -205,8 +209,9 @@
       <span class="result-swatch" style="background:${table.color}"></span>
       <h3>${table.label}</h3>
       <span class="staff-card-counts">
-        <span class="staff-card-count staff-card-count-vegan">${dietIconImg("vegan")} ${veganCount}</span>
-        <span class="staff-card-count staff-card-count-veggie">${dietIconImg("veggie")} ${veggieCount}</span>
+        <span class="staff-card-count staff-card-count-vegan">${badgeIconImg("vegan")} ${veganCount}</span>
+        <span class="staff-card-count staff-card-count-veggie">${badgeIconImg("veggie")} ${veggieCount}</span>
+        <span class="staff-card-count staff-card-count-child">${badgeIconImg("child")} ${childCount}</span>
       </span>
     `;
     card.appendChild(header);
@@ -218,17 +223,17 @@
     const list = document.createElement("ul");
     list.className = "staff-list";
     if (special.length === 0) {
-      list.innerHTML = '<li class="staff-list-empty">Keine besonderen Ernährungswünsche</li>';
+      list.innerHTML = '<li class="staff-list-empty">Keine besonderen Hinweise</li>';
     } else {
       special
         .slice()
         .sort((a, b) => a.seat - b.seat)
         .forEach((g) => {
-          const cls = dietClass(g);
+          const badges = badgeClasses(g)
+            .map((cls) => `<span class="diet-badge diet-badge-${cls}">${badgeIconImg(cls)} ${BADGE_LABEL[cls]}</span>`)
+            .join("");
           const li = document.createElement("li");
-          li.innerHTML = `<span class="guest-highlighted">${g.name}</span><span class="diet-badge diet-badge-${cls}">${dietIconImg(
-            cls
-          )} ${dietLabel(cls)}</span><span class="staff-seat">Platz ${g.seat + 1}</span>`;
+          li.innerHTML = `<span class="guest-highlighted">${g.name}</span>${badges}<span class="staff-seat">Platz ${g.seat + 1}</span>`;
           list.appendChild(li);
         });
     }
