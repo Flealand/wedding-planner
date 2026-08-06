@@ -613,15 +613,15 @@ footer.site-footer {
 }
 
 .staff-seat-circle.staff-seat-vegan {
-  fill: var(--vegan);
-  stroke: var(--ink);
-  stroke-width: 1.5;
+  fill: var(--surface);
+  stroke: var(--vegan);
+  stroke-width: 2.5;
 }
 
 .staff-seat-circle.staff-seat-veggie {
-  fill: var(--veggie);
-  stroke: var(--ink);
-  stroke-width: 1.5;
+  fill: var(--surface);
+  stroke: var(--veggie);
+  stroke-width: 2.5;
 }
 
 .staff-seat-label {
@@ -672,6 +672,12 @@ footer.site-footer {
 #staff-floorplan-svg .table-shape:hover,
 #photo-floorplan-svg .table-shape:hover {
   filter: none;
+}
+
+.overview-badge-backdrop {
+  fill: var(--surface);
+  stroke: rgba(13, 3, 0, 0.15);
+  stroke-width: 1;
 }
 
 .overview-badge-count {

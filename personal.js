@@ -86,6 +86,14 @@
 
     chips.forEach((chip, i) => {
       svg.appendChild(
+        el("circle", {
+          class: "overview-badge-backdrop",
+          cx: cursorX + iconSize / 2,
+          cy,
+          r: iconSize / 2 + 2,
+        })
+      );
+      svg.appendChild(
         el("image", {
           href: ICON_SRC[chip.cls],
           x: cursorX,
