@@ -28,9 +28,27 @@
     return `<img class="diet-icon" src="${ICON_SRC[cls]}" alt="${dietLabel(cls)}">`;
   }
 
-  // ---------- Big overview: one icon+count badge per table, not per seat ----------
-  // (per-seat markers on the zoomed-out plan overlapped between adjacent tables
-  // and made it unclear which table a symbol belonged to)
+  // ---------- Big overview: one marker per colored seat ----------
+  // Markers sit INSET just inside the table's own shape (pulled back in from
+  // whichever edge the seat faces) instead of floating in the gap between
+  // tables, so a marker is always visually "inside" the table it belongs to
+  // even when tables are only ~20 units apart.
+
+  function insetSeatPosition(seat) {
+    const pull = 26; // 14 (original outward push) + 12 (margin inside the edge)
+    switch (seat.dir) {
+      case "n":
+        return { x: seat.x, y: seat.y + pull };
+      case "s":
+        return { x: seat.x, y: seat.y - pull };
+      case "e":
+        return { x: seat.x - pull, y: seat.y };
+      case "w":
+        return { x: seat.x + pull, y: seat.y };
+      default:
+        return { x: seat.x, y: seat.y };
+    }
+  }
 
   function renderOverview() {
     const svg = document.getElementById("staff-floorplan-svg");
@@ -51,66 +69,32 @@
         );
       });
       const main = t.shapeRects[0];
-      const guests = guestsByTable[t.id];
-      const veganCount = guests.filter((g) => g.isVegan).length;
-      const veggieCount = guests.filter((g) => g.isVeggie).length;
-      const hasBadge = veganCount > 0 || veggieCount > 0;
-
-      const label = el("text", {
-        class: "table-label",
-        x: main.x + main.w / 2,
-        y: main.y + main.h / 2 + (hasBadge ? -11 : 0),
-      });
+      const label = el("text", { class: "table-label", x: main.x + main.w / 2, y: main.y + main.h / 2 });
       label.textContent = t.label;
       svg.appendChild(label);
 
-      if (hasBadge) {
-        renderOverviewBadge(svg, main, veganCount, veggieCount);
-      }
+      t.seats.forEach((seat, i) => {
+        const occupant = guestsByTable[t.id].find((g) => g.seat === i);
+        const cls = occupant ? dietClass(occupant) : null;
+        if (!cls) return;
+        const pos = insetSeatPosition(seat);
+        renderOverviewMarker(svg, pos.x, pos.y, cls);
+      });
     });
   }
 
-  function renderOverviewBadge(svg, rect, veganCount, veggieCount) {
-    const chips = [];
-    if (veganCount > 0) chips.push({ cls: "vegan", count: veganCount });
-    if (veggieCount > 0) chips.push({ cls: "veggie", count: veggieCount });
-
-    const iconSize = 20;
-    const chipGap = 4;
-    const groupGap = 12;
-    const chipWidths = chips.map((c) => iconSize + chipGap + String(c.count).length * 8 + 6);
-    const totalWidth = chipWidths.reduce((a, b) => a + b, 0) + groupGap * (chips.length - 1);
-
-    let cursorX = rect.x + rect.w / 2 - totalWidth / 2;
-    const cy = rect.y + rect.h / 2 + 13;
-
-    chips.forEach((chip, i) => {
-      svg.appendChild(
-        el("circle", {
-          class: "overview-badge-backdrop",
-          cx: cursorX + iconSize / 2,
-          cy,
-          r: iconSize / 2 + 2,
-        })
-      );
-      svg.appendChild(
-        el("image", {
-          href: ICON_SRC[chip.cls],
-          x: cursorX,
-          y: cy - iconSize / 2,
-          width: iconSize,
-          height: iconSize,
-        })
-      );
-      const countText = el("text", {
-        class: "overview-badge-count",
-        x: cursorX + iconSize + chipGap,
-        y: cy,
-      });
-      countText.textContent = `×${chip.count}`;
-      svg.appendChild(countText);
-      cursorX += chipWidths[i] + groupGap;
-    });
+  function renderOverviewMarker(svg, cx, cy, cls) {
+    const iconSize = 15;
+    svg.appendChild(el("circle", { class: "overview-badge-backdrop", cx, cy, r: iconSize / 2 + 2 }));
+    svg.appendChild(
+      el("image", {
+        href: ICON_SRC[cls],
+        x: cx - iconSize / 2,
+        y: cy - iconSize / 2,
+        width: iconSize,
+        height: iconSize,
+      })
+    );
   }
 
   function renderSummary() {
