@@ -1,18 +1,58 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="de">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Wedding Planner</title>
+  <title>Sitzplan – Barbara & Christopher</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <header>
-    <h1>Wedding Planner</h1>
+  <header class="site-header">
+    <span class="brand">Barbara &amp; Christopher</span>
   </header>
-  <main>
-    <p>Project scaffold is set up. Let's start planning.</p>
+
+  <main class="wide">
+    <div class="page-title">
+      <div class="eyebrow">Findet euren Platz</div>
+      <h1>Sitzplan</h1>
+      <p>Namen eingeben und der Tisch wird auf dem Plan markiert.</p>
+    </div>
+
+    <div class="search-wrap">
+      <div class="search-box">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="7"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+        <input type="text" id="guest-search" placeholder="Nach eurem Namen suchen…" autocomplete="off">
+      </div>
+      <div class="search-results" id="search-results"></div>
+    </div>
+
+    <div class="floorplan-wrap">
+      <svg id="floorplan-svg" viewBox="0 0 1000 520" role="img" aria-label="Sitzplan der Hallermühle"></svg>
+    </div>
+    <p class="legend-note">Jeder Tisch hat seine eigene Farbe – praktisch, um sich beim Fotoshooting wiederzufinden. Tippt auf einen Tisch, um die einzelnen Plätze zu sehen. Die Sitzordnung ist aktuell noch zufällig und wird bald final festgelegt.</p>
+
+    <div class="table-detail" id="table-detail">
+      <div class="table-detail-header">
+        <span class="result-swatch" id="detail-swatch"></span>
+        <h3 id="detail-title"></h3>
+        <span class="cap" id="detail-cap"></span>
+      </div>
+      <div class="seat-diagram-wrap">
+        <svg id="seat-diagram-svg" role="img" aria-label="Sitzplätze am Tisch"></svg>
+      </div>
+      <ul class="table-guest-list" id="detail-guests"></ul>
+    </div>
+
+    <button class="directory-toggle" id="directory-toggle">Ganze Gästeliste nach Tisch anzeigen</button>
+    <div class="directory" id="directory"></div>
   </main>
-  <script src="script.js"></script>
+
+  <footer class="site-footer">Barbara &amp; Christopher · Hallermühle</footer>
+
+  <script src="seating-data.js"></script>
+  <script src="sitzplan.js"></script>
 </body>
 </html>
