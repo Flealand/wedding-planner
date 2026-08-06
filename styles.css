@@ -607,13 +607,6 @@ footer.site-footer {
   stroke-width: 1.5;
 }
 
-.staff-seat-icon {
-  font-size: 13px;
-  text-anchor: middle;
-  dominant-baseline: central;
-  pointer-events: none;
-}
-
 .staff-seat-label {
   font-family: var(--font-body);
   font-size: 11px;
@@ -662,15 +655,17 @@ footer.site-footer {
   filter: none;
 }
 
-.overview-diet-backdrop {
+.overview-badge-count {
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 700;
   fill: var(--surface);
-  stroke: rgba(13, 3, 0, 0.15);
-  stroke-width: 1;
+  dominant-baseline: middle;
 }
 
-.overview-diet-marker {
-  font-size: 20px;
-  text-anchor: middle;
-  dominant-baseline: central;
-  pointer-events: none;
+.diet-icon {
+  width: 14px;
+  height: 14px;
+  vertical-align: -2px;
+  display: inline-block;
 }

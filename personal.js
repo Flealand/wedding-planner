@@ -9,6 +9,8 @@
     return node;
   }
 
+  const ICON_SRC = { vegan: "icons/vegan.png", veggie: "icons/cheese.svg" };
+
   const guestsByTable = Object.fromEntries(TABLES.map((t) => [t.id, []]));
   GUESTS.forEach((g) => guestsByTable[g.table].push(g));
 
@@ -22,9 +24,13 @@
     return cls === "vegan" ? "Vegan" : "Vegetarisch";
   }
 
-  function dietIcon(cls) {
-    return cls === "vegan" ? "🌱" : "🧀";
+  function dietIconImg(cls) {
+    return `<img class="diet-icon" src="${ICON_SRC[cls]}" alt="${dietLabel(cls)}">`;
   }
+
+  // ---------- Big overview: one icon+count badge per table, not per seat ----------
+  // (per-seat markers on the zoomed-out plan overlapped between adjacent tables
+  // and made it unclear which table a symbol belonged to)
 
   function renderOverview() {
     const svg = document.getElementById("staff-floorplan-svg");
@@ -45,19 +51,57 @@
         );
       });
       const main = t.shapeRects[0];
-      const label = el("text", { class: "table-label", x: main.x + main.w / 2, y: main.y + main.h / 2 });
+      const guests = guestsByTable[t.id];
+      const veganCount = guests.filter((g) => g.isVegan).length;
+      const veggieCount = guests.filter((g) => g.isVeggie).length;
+      const hasBadge = veganCount > 0 || veggieCount > 0;
+
+      const label = el("text", {
+        class: "table-label",
+        x: main.x + main.w / 2,
+        y: main.y + main.h / 2 + (hasBadge ? -11 : 0),
+      });
       label.textContent = t.label;
       svg.appendChild(label);
 
-      t.seats.forEach((seat, i) => {
-        const occupant = guestsByTable[t.id].find((g) => g.seat === i);
-        const cls = occupant ? dietClass(occupant) : null;
-        if (!cls) return;
-        svg.appendChild(el("circle", { class: "overview-diet-backdrop", cx: seat.x, cy: seat.y, r: 15 }));
-        const marker = el("text", { class: "overview-diet-marker", x: seat.x, y: seat.y });
-        marker.textContent = cls === "vegan" ? "🌱" : "🧀";
-        svg.appendChild(marker);
+      if (hasBadge) {
+        renderOverviewBadge(svg, main, veganCount, veggieCount);
+      }
+    });
+  }
+
+  function renderOverviewBadge(svg, rect, veganCount, veggieCount) {
+    const chips = [];
+    if (veganCount > 0) chips.push({ cls: "vegan", count: veganCount });
+    if (veggieCount > 0) chips.push({ cls: "veggie", count: veggieCount });
+
+    const iconSize = 15;
+    const chipGap = 4;
+    const groupGap = 12;
+    const chipWidths = chips.map((c) => iconSize + chipGap + String(c.count).length * 8 + 6);
+    const totalWidth = chipWidths.reduce((a, b) => a + b, 0) + groupGap * (chips.length - 1);
+
+    let cursorX = rect.x + rect.w / 2 - totalWidth / 2;
+    const cy = rect.y + rect.h / 2 + 13;
+
+    chips.forEach((chip, i) => {
+      svg.appendChild(
+        el("image", {
+          href: ICON_SRC[chip.cls],
+          x: cursorX,
+          y: cy - iconSize / 2,
+          width: iconSize,
+          height: iconSize,
+        })
+      );
+      const countText = el("text", {
+        class: "overview-badge-count",
+        x: cursorX + iconSize + chipGap,
+        y: cy,
       });
+      countText.textContent = `×${chip.count}`;
+      svg.appendChild(countText);
+      cursorX += chipWidths[i] + groupGap;
     });
   }
 
@@ -113,9 +157,16 @@
         })
       );
       if (cls) {
-        const icon = el("text", { class: "staff-seat-icon", x: seat.x, y: seat.y });
-        icon.textContent = dietIcon(cls);
-        svg.appendChild(icon);
+        const iconSize = 15;
+        svg.appendChild(
+          el("image", {
+            href: ICON_SRC[cls],
+            x: seat.x - iconSize / 2,
+            y: seat.y - iconSize / 2,
+            width: iconSize,
+            height: iconSize,
+          })
+        );
       }
       if (!occupant) return;
       let lx = seat.x,
@@ -162,8 +213,8 @@
       <span class="result-swatch" style="background:${table.color}"></span>
       <h3>${table.label}</h3>
       <span class="staff-card-counts">
-        <span class="staff-card-count staff-card-count-vegan">🌱 ${veganCount}</span>
-        <span class="staff-card-count staff-card-count-veggie">🧀 ${veggieCount}</span>
+        <span class="staff-card-count staff-card-count-vegan">${dietIconImg("vegan")} ${veganCount}</span>
+        <span class="staff-card-count staff-card-count-veggie">${dietIconImg("veggie")} ${veggieCount}</span>
       </span>
     `;
     card.appendChild(header);
@@ -183,7 +234,7 @@
         .forEach((g) => {
           const cls = dietClass(g);
           const li = document.createElement("li");
-          li.innerHTML = `<span class="guest-highlighted">${g.name}</span><span class="diet-badge diet-badge-${cls}">${dietIcon(
+          li.innerHTML = `<span class="guest-highlighted">${g.name}</span><span class="diet-badge diet-badge-${cls}">${dietIconImg(
             cls
           )} ${dietLabel(cls)}</span><span class="staff-seat">Platz ${g.seat + 1}</span>`;
           list.appendChild(li);
