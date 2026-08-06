@@ -536,9 +536,44 @@ footer.site-footer {
 
 .staff-card-counts {
   margin-left: auto;
-  font-size: 0.78rem;
-  color: var(--text-muted);
+  display: flex;
+  gap: 0.4rem;
   white-space: nowrap;
+}
+
+.staff-card-count {
+  font-size: 0.82rem;
+  font-weight: 600;
+  padding: 0.15rem 0.45rem;
+  border-radius: 999px;
+}
+
+.staff-card-count-vegan {
+  background: rgba(79, 121, 66, 0.14);
+  color: var(--vegan);
+}
+
+.staff-card-count-veggie {
+  background: rgba(203, 138, 61, 0.16);
+  color: var(--veggie);
+}
+
+.diet-badge {
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.diet-badge-vegan {
+  background: rgba(79, 121, 66, 0.16);
+  color: var(--vegan);
+}
+
+.diet-badge-veggie {
+  background: rgba(203, 138, 61, 0.18);
+  color: var(--veggie);
 }
 
 .staff-diagram {
@@ -603,21 +638,6 @@ footer.site-footer {
   color: var(--text-muted);
   font-style: italic;
   font-size: 0.85rem;
-}
-
-.staff-dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  flex-shrink: 0;
-}
-
-.staff-dot-vegan {
-  background: var(--vegan);
-}
-
-.staff-dot-veggie {
-  background: var(--veggie);
 }
 
 .staff-seat {

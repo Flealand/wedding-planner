@@ -22,6 +22,10 @@
     return cls === "vegan" ? "Vegan" : "Vegetarisch";
   }
 
+  function dietIcon(cls) {
+    return cls === "vegan" ? "🌱" : "🧀";
+  }
+
   function renderOverview() {
     const svg = document.getElementById("staff-floorplan-svg");
 
@@ -152,7 +156,10 @@
     header.innerHTML = `
       <span class="result-swatch" style="background:${table.color}"></span>
       <h3>${table.label}</h3>
-      <span class="staff-card-counts">${veganCount} vegan · ${veggieCount} veggie</span>
+      <span class="staff-card-counts">
+        <span class="staff-card-count staff-card-count-vegan">🌱 ${veganCount}</span>
+        <span class="staff-card-count staff-card-count-veggie">🧀 ${veggieCount}</span>
+      </span>
     `;
     card.appendChild(header);
 
@@ -171,9 +178,9 @@
         .forEach((g) => {
           const cls = dietClass(g);
           const li = document.createElement("li");
-          li.innerHTML = `<span class="staff-dot staff-dot-${cls}"></span><span>${g.name}</span><span class="tag">${dietLabel(
+          li.innerHTML = `<span class="guest-highlighted">${g.name}</span><span class="diet-badge diet-badge-${cls}">${dietIcon(
             cls
-          )}</span><span class="staff-seat">Platz ${g.seat + 1}</span>`;
+          )} ${dietLabel(cls)}</span><span class="staff-seat">Platz ${g.seat + 1}</span>`;
           list.appendChild(li);
         });
     }
