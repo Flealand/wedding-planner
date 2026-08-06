@@ -9,7 +9,7 @@
     return node;
   }
 
-  const ICON_SRC = { vegan: "icons/vegan.png", veggie: "icons/cheese.svg" };
+  const ICON_SRC = { vegan: "icons/vegan.png", veggie: "icons/tomato.svg" };
 
   const guestsByTable = Object.fromEntries(TABLES.map((t) => [t.id, []]));
   GUESTS.forEach((g) => guestsByTable[g.table].push(g));
@@ -75,7 +75,7 @@
     if (veganCount > 0) chips.push({ cls: "vegan", count: veganCount });
     if (veggieCount > 0) chips.push({ cls: "veggie", count: veggieCount });
 
-    const iconSize = 15;
+    const iconSize = 20;
     const chipGap = 4;
     const groupGap = 12;
     const chipWidths = chips.map((c) => iconSize + chipGap + String(c.count).length * 8 + 6);
@@ -153,11 +153,11 @@
           class: "staff-seat-circle" + (cls ? ` staff-seat-${cls}` : ""),
           cx: seat.x,
           cy: seat.y,
-          r: cls ? 12 : 6,
+          r: cls ? 15 : 6,
         })
       );
       if (cls) {
-        const iconSize = 15;
+        const iconSize = 20;
         svg.appendChild(
           el("image", {
             href: ICON_SRC[cls],
