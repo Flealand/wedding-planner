@@ -607,6 +607,13 @@ footer.site-footer {
   stroke-width: 1.5;
 }
 
+.staff-seat-icon {
+  font-size: 13px;
+  text-anchor: middle;
+  dominant-baseline: central;
+  pointer-events: none;
+}
+
 .staff-seat-label {
   font-family: var(--font-body);
   font-size: 11px;

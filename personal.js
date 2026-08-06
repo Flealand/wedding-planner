@@ -112,6 +112,11 @@
           r: cls ? 12 : 6,
         })
       );
+      if (cls) {
+        const icon = el("text", { class: "staff-seat-icon", x: seat.x, y: seat.y });
+        icon.textContent = dietIcon(cls);
+        svg.appendChild(icon);
+      }
       if (!occupant) return;
       let lx = seat.x,
         ly = seat.y,
