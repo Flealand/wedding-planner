@@ -241,7 +241,7 @@
     const matches = GUESTS.filter((g) => normalize(g.name).includes(query));
     renderResults(matches, query);
     if (matches.length === 1) {
-      showTableDetail(matches[0].table, { highlightSeat: matches[0].seat });
+      showTableDetail(matches[0].table, { highlightSeat: matches[0].seat, scrollTo: false });
     }
   });
 
