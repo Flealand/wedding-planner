@@ -626,3 +626,24 @@ footer.site-footer {
   color: var(--text-muted);
   white-space: nowrap;
 }
+
+#staff-floorplan-svg .table-shape {
+  cursor: default;
+}
+
+#staff-floorplan-svg .table-shape:hover {
+  filter: none;
+}
+
+.overview-diet-backdrop {
+  fill: var(--surface);
+  stroke: rgba(13, 3, 0, 0.15);
+  stroke-width: 1;
+}
+
+.overview-diet-marker {
+  font-size: 20px;
+  text-anchor: middle;
+  dominant-baseline: central;
+  pointer-events: none;
+}

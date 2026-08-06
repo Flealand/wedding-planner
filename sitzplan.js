@@ -205,7 +205,6 @@
       resultsEl.innerHTML = '<div class="no-results">Kein Gast gefunden – versucht einen anderen Namen.</div>';
       return;
     }
-    if (matches.length === 1) return; // single match opens the detail view directly instead of a card
     matches.slice(0, 8).forEach((g) => {
       const t = tableById[g.table];
       const card = document.createElement("div");

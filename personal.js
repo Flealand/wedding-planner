@@ -22,6 +22,41 @@
     return cls === "vegan" ? "Vegan" : "Vegetarisch";
   }
 
+  function renderOverview() {
+    const svg = document.getElementById("staff-floorplan-svg");
+
+    LANDMARKS.forEach((lm) => {
+      svg.appendChild(
+        el("rect", { class: "landmark-shape", x: lm.rect.x, y: lm.rect.y, width: lm.rect.w, height: lm.rect.h, rx: 8 })
+      );
+      const label = el("text", { class: "landmark-label", x: lm.rect.x + lm.rect.w / 2, y: lm.rect.y + lm.rect.h / 2 });
+      label.textContent = lm.label;
+      svg.appendChild(label);
+    });
+
+    TABLES.forEach((t) => {
+      t.shapeRects.forEach((r) => {
+        svg.appendChild(
+          el("rect", { class: "table-shape", x: r.x, y: r.y, width: r.w, height: r.h, rx: 10, fill: t.color })
+        );
+      });
+      const main = t.shapeRects[0];
+      const label = el("text", { class: "table-label", x: main.x + main.w / 2, y: main.y + main.h / 2 });
+      label.textContent = t.label;
+      svg.appendChild(label);
+
+      t.seats.forEach((seat, i) => {
+        const occupant = guestsByTable[t.id].find((g) => g.seat === i);
+        const cls = occupant ? dietClass(occupant) : null;
+        if (!cls) return;
+        svg.appendChild(el("circle", { class: "overview-diet-backdrop", cx: seat.x, cy: seat.y, r: 15 }));
+        const marker = el("text", { class: "overview-diet-marker", x: seat.x, y: seat.y });
+        marker.textContent = cls === "vegan" ? "🌱" : "🧀";
+        svg.appendChild(marker);
+      });
+    });
+  }
+
   function renderSummary() {
     const totalVegan = GUESTS.filter((g) => g.isVegan).length;
     const totalVeggie = GUESTS.filter((g) => g.isVeggie).length;
@@ -147,5 +182,6 @@
   }
 
   renderSummary();
+  renderOverview();
   TABLES.forEach((t) => tablesEl.appendChild(renderTableCard(t)));
 })();
