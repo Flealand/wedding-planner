@@ -365,8 +365,7 @@ footer.site-footer {
 }
 
 .seat-circle {
-  fill: var(--surface);
-  stroke: var(--accent-dark);
+  stroke: rgba(255, 255, 255, 0.85);
   stroke-width: 2;
 }
 
@@ -376,10 +375,20 @@ footer.site-footer {
   stroke-dasharray: 2 2;
 }
 
-.seat-circle.seat-highlighted {
-  fill: var(--accent);
+.seat-color-slice {
+  stroke: none;
+}
+
+.seat-color-outline {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.85);
+  stroke-width: 2;
+}
+
+.seat-highlight-ring {
+  fill: none;
   stroke: var(--ink);
-  stroke-width: 2.5;
+  stroke-width: 3;
   animation: pulse-glow 1.1s ease-in-out infinite;
 }
 

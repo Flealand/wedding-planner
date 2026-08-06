@@ -6,40 +6,9 @@
     return node;
   }
 
-  const KNOWN_COLORS = {
-    rot: "#c0392b",
-    blau: "#3d6fa8",
-    gruen: "#4f7942",
-    grün: "#4f7942",
-    gelb: "#d4ac17",
-    orange: "#e07b39",
-    lila: "#7d5ba6",
-    violett: "#7d5ba6",
-    rosa: "#d98ba0",
-    pink: "#d98ba0",
-    tuerkis: "#3aa6a0",
-    türkis: "#3aa6a0",
-    schwarz: "#2b2b2b",
-    weiss: "#e9e3da",
-    weiß: "#e9e3da",
-    grau: "#8a8a86",
-    braun: "#6b4a35",
-    beige: "#c9b896",
-    gold: "#c9a24b",
-    silber: "#b9b9b3",
-  };
-
-  // Fallback so an unrecognized color word (future data) still gets a
-  // distinct, stable color instead of breaking.
-  function fallbackHex(name) {
-    let hash = 0;
-    for (let i = 0; i < name.length; i++) hash = (hash * 31 + name.charCodeAt(i)) >>> 0;
-    return `hsl(${hash % 360}, 55%, 45%)`;
-  }
-
-  function colorHex(name) {
-    return KNOWN_COLORS[name.toLowerCase()] || fallbackHex(name.toLowerCase());
-  }
+  // Color hex lookup + pie-slice math live in seating-data.js (photoColorHex,
+  // photoPieSlicePath) so the main seating plan and this page always agree.
+  const colorHex = photoColorHex;
 
   function colorLabel(name) {
     return name.charAt(0).toUpperCase() + name.slice(1);
@@ -96,18 +65,6 @@
 
   // ---------- Pie-sliced seat marker (handles 1..N colors per person) ----------
 
-  function polarPoint(cx, cy, r, angleDeg) {
-    const rad = ((angleDeg - 90) * Math.PI) / 180;
-    return { x: cx + r * Math.cos(rad), y: cy + r * Math.sin(rad) };
-  }
-
-  function pieSlicePath(cx, cy, r, startAngle, endAngle) {
-    const start = polarPoint(cx, cy, r, endAngle);
-    const end = polarPoint(cx, cy, r, startAngle);
-    const largeArc = endAngle - startAngle <= 180 ? 0 : 1;
-    return `M ${cx} ${cy} L ${start.x} ${start.y} A ${r} ${r} 0 ${largeArc} 0 ${end.x} ${end.y} Z`;
-  }
-
   function renderColorSeat(svg, cx, cy, r, colors) {
     if (!colors || colors.length === 0) {
       svg.appendChild(el("circle", { class: "photo-seat-empty", cx, cy, r: 6 }));
@@ -124,7 +81,7 @@
       svg.appendChild(
         el("path", {
           class: "photo-seat-slice",
-          d: pieSlicePath(cx, cy, r, i * slice, (i + 1) * slice),
+          d: photoPieSlicePath(cx, cy, r, i * slice, (i + 1) * slice),
           fill: colorHex(name),
         })
       );

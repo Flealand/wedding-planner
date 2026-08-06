@@ -6,9 +6,10 @@
 // detail view (the detail view just crops its <svg viewBox> to one table's
 // bounding box), so every shape/seat is defined once, here.
 //
-// `colors` on a guest is an optional array of photo-group color names (a
-// person can be in multiple groups). This is preliminary data and only
-// covers a handful of guests so far — see fotoliste.html/js.
+// `colors` on a guest is an array of photo-group color names (a person can
+// be in multiple groups, shown as a pie-sliced seat marker). This is
+// preliminary data — see fotoliste.html/js for the full group breakdown;
+// the main seating plan only shows the color itself, nothing more.
 
 function rectSeats(rect, cap) {
   const top = Math.ceil(cap / 2);
@@ -89,72 +90,122 @@ const LANDMARKS = [
   { id: "buehne", label: "Bühne", rect: { x: 320, y: 420, w: 340, h: 70 } },
 ];
 
+// Bold, easily-told-apart photo-group colors. Kept as a shared lookup so the
+// main seating plan and the Fotoliste page render identical colors.
+const PHOTO_COLOR_HEX = {
+  rot: "#e11d1d",
+  blau: "#1d63e1",
+  gruen: "#1f9e4c",
+  grün: "#1f9e4c",
+  gelb: "#f0c419",
+  orange: "#f0790a",
+  lila: "#8e3fd6",
+  violett: "#8e3fd6",
+  rosa: "#e0489a",
+  pink: "#e0489a",
+  tuerkis: "#12a4a0",
+  türkis: "#12a4a0",
+  schwarz: "#2b2b2b",
+  weiss: "#e9e3da",
+  weiß: "#e9e3da",
+  grau: "#8a8a86",
+  braun: "#6b4a35",
+  beige: "#c9b896",
+  gold: "#c9a24b",
+  silber: "#b9b9b3",
+};
+
+function photoColorHex(name) {
+  const known = PHOTO_COLOR_HEX[name.toLowerCase()];
+  if (known) return known;
+  // Fallback so an unrecognized color word (future data) still gets a
+  // distinct, stable color instead of breaking.
+  let hash = 0;
+  for (let i = 0; i < name.length; i++) hash = (hash * 31 + name.charCodeAt(i)) >>> 0;
+  return `hsl(${hash % 360}, 60%, 45%)`;
+}
+
+// Pure geometry for pie-sliced seat markers (a guest with multiple colors
+// gets one wedge per color). No DOM here — each page's own script draws the
+// actual <path> using its own element-creation helper.
+function photoPolarPoint(cx, cy, r, angleDeg) {
+  const rad = ((angleDeg - 90) * Math.PI) / 180;
+  return { x: cx + r * Math.cos(rad), y: cy + r * Math.sin(rad) };
+}
+
+function photoPieSlicePath(cx, cy, r, startAngle, endAngle) {
+  const start = photoPolarPoint(cx, cy, r, endAngle);
+  const end = photoPolarPoint(cx, cy, r, startAngle);
+  const largeArc = endAngle - startAngle <= 180 ? 0 : 1;
+  return `M ${cx} ${cy} L ${start.x} ${start.y} A ${r} ${r} 0 ${largeArc} 0 ${end.x} ${end.y} Z`;
+}
+
 const GUESTS = [
   { name: "Dagmar Klein", table: "brauttisch", seat: 0, isChild: false, isVeggie: false, isVegan: false, colors: ["blau"] },
-  { name: "Lisa Oefler", table: "brauttisch", seat: 1, isChild: false, isVeggie: true, isVegan: false },
+  { name: "Lisa Oefler", table: "brauttisch", seat: 1, isChild: false, isVeggie: true, isVegan: false, colors: ["gruen"] },
   { name: "Thomas Klein", table: "brauttisch", seat: 2, isChild: false, isVeggie: false, isVegan: false, colors: ["blau"] },
-  { name: "Hans-Walter Schaller", table: "brauttisch", seat: 3, isChild: false, isVeggie: false, isVegan: false },
-  { name: "Thomas Trautner", table: "brauttisch", seat: 4, isChild: false, isVeggie: false, isVegan: false },
-  { name: "Lisa ???????", table: "brauttisch", seat: 5, isChild: false, isVeggie: true, isVegan: false },
+  { name: "Hans-Walter Schaller", table: "brauttisch", seat: 3, isChild: false, isVeggie: false, isVegan: false, colors: ["gelb"] },
+  { name: "Thomas Trautner", table: "brauttisch", seat: 4, isChild: false, isVeggie: false, isVegan: false, colors: ["orange"] },
+  { name: "Lisa ???????", table: "brauttisch", seat: 5, isChild: false, isVeggie: true, isVegan: false, colors: ["lila"] },
   { name: "Nik Waters", table: "brauttisch", seat: 6, isChild: false, isVeggie: false, isVegan: false, colors: ["blau"] },
   { name: "Oli Graß", table: "brauttisch", seat: 7, isChild: false, isVeggie: false, isVegan: false, colors: ["rot"] },
-  { name: "Beate Schaller", table: "brauttisch", seat: 8, isChild: false, isVeggie: false, isVegan: false },
+  { name: "Beate Schaller", table: "brauttisch", seat: 8, isChild: false, isVeggie: false, isVegan: false, colors: ["rot"] },
   { name: "Andrea Graß", table: "brauttisch", seat: 9, isChild: false, isVeggie: false, isVegan: false, colors: ["rot"] },
   { name: "Walburga Graß", table: "brauttisch", seat: 10, isChild: false, isVeggie: false, isVegan: false, colors: ["rot"] },
-  { name: "Christopher Schaller-Graß", table: "brauttisch", seat: 11, isChild: false, isVeggie: false, isVegan: false },
+  { name: "Christopher Schaller-Graß", table: "brauttisch", seat: 11, isChild: false, isVeggie: false, isVegan: false, colors: ["blau"] },
   { name: "Veronika Sticht", table: "brauttisch", seat: 12, isChild: false, isVeggie: false, isVegan: false, colors: ["rot"] },
-  { name: "Luisa Piewak", table: "brauttisch", seat: 13, isChild: false, isVeggie: true, isVegan: false },
+  { name: "Luisa Piewak", table: "brauttisch", seat: 13, isChild: false, isVeggie: true, isVegan: false, colors: ["gruen"] },
   { name: "Patrick Wiche", table: "brauttisch", seat: 14, isChild: false, isVeggie: false, isVegan: false, colors: ["blau"] },
   { name: "Moritz Klein", table: "brauttisch", seat: 15, isChild: false, isVeggie: false, isVegan: false, colors: ["blau"] },
-  { name: "Gertraud Schirmer", table: "t3", seat: 0, isChild: false, isVeggie: false, isVegan: false },
-  { name: "Christine Kuhnt", table: "t3", seat: 1, isChild: false, isVeggie: false, isVegan: false },
-  { name: "Ailsa Saffar", table: "t3", seat: 2, isChild: false, isVeggie: false, isVegan: false },
-  { name: "Melanie Beege", table: "t3", seat: 3, isChild: false, isVeggie: true, isVegan: false },
-  { name: "Lara Hofmann", table: "t3", seat: 4, isChild: false, isVeggie: true, isVegan: false },
-  { name: "Maxi Schellermann", table: "t3", seat: 5, isChild: false, isVeggie: false, isVegan: false },
-  { name: "Christoph Schaller", table: "t3", seat: 6, isChild: false, isVeggie: false, isVegan: false },
-  { name: "Natalie", table: "t3", seat: 7, isChild: false, isVeggie: false, isVegan: false },
-  { name: "Kindolino Piewak", table: "t3", seat: 8, isChild: true, isVeggie: false, isVegan: false },
-  { name: "Barbara Schaller-Graß", table: "t3", seat: 9, isChild: false, isVeggie: false, isVegan: false },
-  { name: "Thiemo", table: "t4", seat: 0, isChild: false, isVeggie: false, isVegan: false },
-  { name: "Christian Beege", table: "t4", seat: 1, isChild: false, isVeggie: false, isVegan: true },
-  { name: "Johannes Beier", table: "t4", seat: 2, isChild: false, isVeggie: false, isVegan: false },
-  { name: "Alexandre Girault", table: "t4", seat: 3, isChild: false, isVeggie: false, isVegan: false },
-  { name: "Shanice Arendt", table: "t4", seat: 4, isChild: false, isVeggie: true, isVegan: false },
-  { name: "Robert Schrepfer", table: "t4", seat: 5, isChild: false, isVeggie: false, isVegan: false },
-  { name: "Sebiastian Reuther", table: "t4", seat: 6, isChild: false, isVeggie: false, isVegan: false },
-  { name: "Nicole", table: "t4", seat: 7, isChild: false, isVeggie: false, isVegan: false },
-  { name: "Simon Gutfleisch", table: "t5", seat: 0, isChild: false, isVeggie: true, isVegan: false },
-  { name: "Robert Chwalka", table: "t5", seat: 1, isChild: false, isVeggie: false, isVegan: false },
-  { name: "Bibi Stewart", table: "t5", seat: 2, isChild: false, isVeggie: false, isVegan: false },
-  { name: "Charlotte Reuter", table: "t5", seat: 3, isChild: false, isVeggie: false, isVegan: false },
-  { name: "Xue Lin", table: "t5", seat: 4, isChild: false, isVeggie: false, isVegan: false },
-  { name: "Tassilo Elsberger", table: "t5", seat: 5, isChild: false, isVeggie: true, isVegan: false },
-  { name: "Martin Weydenhammer", table: "t5", seat: 6, isChild: false, isVeggie: false, isVegan: false },
+  { name: "Gertraud Schirmer", table: "t3", seat: 0, isChild: false, isVeggie: false, isVegan: false, colors: ["gelb"] },
+  { name: "Christine Kuhnt", table: "t3", seat: 1, isChild: false, isVeggie: false, isVegan: false, colors: ["orange"] },
+  { name: "Ailsa Saffar", table: "t3", seat: 2, isChild: false, isVeggie: false, isVegan: false, colors: ["lila"] },
+  { name: "Melanie Beege", table: "t3", seat: 3, isChild: false, isVeggie: true, isVegan: false, colors: ["rot"] },
+  { name: "Lara Hofmann", table: "t3", seat: 4, isChild: false, isVeggie: true, isVegan: false, colors: ["blau"] },
+  { name: "Maxi Schellermann", table: "t3", seat: 5, isChild: false, isVeggie: false, isVegan: false, colors: ["gruen"] },
+  { name: "Christoph Schaller", table: "t3", seat: 6, isChild: false, isVeggie: false, isVegan: false, colors: ["gelb"] },
+  { name: "Natalie", table: "t3", seat: 7, isChild: false, isVeggie: false, isVegan: false, colors: ["orange"] },
+  { name: "Kindolino Piewak", table: "t3", seat: 8, isChild: true, isVeggie: false, isVegan: false, colors: ["lila"] },
+  { name: "Barbara Schaller-Graß", table: "t3", seat: 9, isChild: false, isVeggie: false, isVegan: false, colors: ["rot"] },
+  { name: "Thiemo", table: "t4", seat: 0, isChild: false, isVeggie: false, isVegan: false, colors: ["blau", "rot", "gelb"] },
+  { name: "Christian Beege", table: "t4", seat: 1, isChild: false, isVeggie: false, isVegan: true, colors: ["gruen"] },
+  { name: "Johannes Beier", table: "t4", seat: 2, isChild: false, isVeggie: false, isVegan: false, colors: ["gelb"] },
+  { name: "Alexandre Girault", table: "t4", seat: 3, isChild: false, isVeggie: false, isVegan: false, colors: ["orange"] },
+  { name: "Shanice Arendt", table: "t4", seat: 4, isChild: false, isVeggie: true, isVegan: false, colors: ["lila"] },
+  { name: "Robert Schrepfer", table: "t4", seat: 5, isChild: false, isVeggie: false, isVegan: false, colors: ["rot"] },
+  { name: "Sebiastian Reuther", table: "t4", seat: 6, isChild: false, isVeggie: false, isVegan: false, colors: ["blau"] },
+  { name: "Nicole", table: "t4", seat: 7, isChild: false, isVeggie: false, isVegan: false, colors: ["gruen"] },
+  { name: "Simon Gutfleisch", table: "t5", seat: 0, isChild: false, isVeggie: true, isVegan: false, colors: ["gelb"] },
+  { name: "Robert Chwalka", table: "t5", seat: 1, isChild: false, isVeggie: false, isVegan: false, colors: ["orange"] },
+  { name: "Bibi Stewart", table: "t5", seat: 2, isChild: false, isVeggie: false, isVegan: false, colors: ["lila"] },
+  { name: "Charlotte Reuter", table: "t5", seat: 3, isChild: false, isVeggie: false, isVegan: false, colors: ["rot"] },
+  { name: "Xue Lin", table: "t5", seat: 4, isChild: false, isVeggie: false, isVegan: false, colors: ["blau"] },
+  { name: "Tassilo Elsberger", table: "t5", seat: 5, isChild: false, isVeggie: true, isVegan: false, colors: ["gruen"] },
+  { name: "Martin Weydenhammer", table: "t5", seat: 6, isChild: false, isVeggie: false, isVegan: false, colors: ["gelb"] },
   { name: "Stefan Graß", table: "t5", seat: 7, isChild: false, isVeggie: false, isVegan: false, colors: ["rot"] },
-  { name: "Christina Hofmann", table: "t6", seat: 0, isChild: false, isVeggie: true, isVegan: false },
-  { name: "Jonas Zipfel", table: "t6", seat: 1, isChild: false, isVeggie: false, isVegan: false },
-  { name: "Maike", table: "t6", seat: 2, isChild: false, isVeggie: false, isVegan: false },
-  { name: "Marina Hlinka", table: "t6", seat: 3, isChild: false, isVeggie: false, isVegan: false },
-  { name: "Marcel Penno", table: "t6", seat: 4, isChild: false, isVeggie: true, isVegan: false },
-  { name: "Gregor Hlinka", table: "t6", seat: 5, isChild: false, isVeggie: false, isVegan: false },
-  { name: "Anke Schellermann", table: "t6", seat: 6, isChild: false, isVeggie: false, isVegan: false },
-  { name: "Fabian Schellermann", table: "t6", seat: 7, isChild: false, isVeggie: false, isVegan: false },
+  { name: "Christina Hofmann", table: "t6", seat: 0, isChild: false, isVeggie: true, isVegan: false, colors: ["orange"] },
+  { name: "Jonas Zipfel", table: "t6", seat: 1, isChild: false, isVeggie: false, isVegan: false, colors: ["lila"] },
+  { name: "Maike", table: "t6", seat: 2, isChild: false, isVeggie: false, isVegan: false, colors: ["rot"] },
+  { name: "Marina Hlinka", table: "t6", seat: 3, isChild: false, isVeggie: false, isVegan: false, colors: ["blau"] },
+  { name: "Marcel Penno", table: "t6", seat: 4, isChild: false, isVeggie: true, isVegan: false, colors: ["gruen"] },
+  { name: "Gregor Hlinka", table: "t6", seat: 5, isChild: false, isVeggie: false, isVegan: false, colors: ["gelb"] },
+  { name: "Anke Schellermann", table: "t6", seat: 6, isChild: false, isVeggie: false, isVegan: false, colors: ["orange"] },
+  { name: "Fabian Schellermann", table: "t6", seat: 7, isChild: false, isVeggie: false, isVegan: false, colors: ["lila"] },
   { name: "Katharina Waters", table: "t6", seat: 8, isChild: false, isVeggie: false, isVegan: false, colors: ["blau"] },
-  { name: "Milo", table: "t6", seat: 9, isChild: true, isVeggie: false, isVegan: false },
-  { name: "Andi", table: "t7", seat: 0, isChild: false, isVeggie: false, isVegan: false },
-  { name: "Felix Haenlein", table: "t7", seat: 1, isChild: false, isVeggie: false, isVegan: false },
+  { name: "Milo", table: "t6", seat: 9, isChild: true, isVeggie: false, isVegan: false, colors: ["rot"] },
+  { name: "Andi", table: "t7", seat: 0, isChild: false, isVeggie: false, isVegan: false, colors: ["blau"] },
+  { name: "Felix Haenlein", table: "t7", seat: 1, isChild: false, isVeggie: false, isVegan: false, colors: ["gruen"] },
   { name: "Lisa Klein", table: "t7", seat: 2, isChild: false, isVeggie: false, isVegan: false, colors: ["blau"] },
-  { name: "Emma Girault", table: "t7", seat: 3, isChild: true, isVeggie: false, isVegan: false },
-  { name: "David Eiber", table: "t7", seat: 4, isChild: false, isVeggie: true, isVegan: false },
-  { name: "Elisa", table: "t7", seat: 5, isChild: true, isVeggie: false, isVegan: false },
-  { name: "Anna Heißmann", table: "t7", seat: 6, isChild: false, isVeggie: true, isVegan: false },
-  { name: "Marco Hofmann", table: "t7", seat: 7, isChild: false, isVeggie: false, isVegan: false },
-  { name: "Maikes Mann", table: "t7", seat: 8, isChild: false, isVeggie: false, isVegan: false },
-  { name: "Colin Schrepfer", table: "t7", seat: 9, isChild: true, isVeggie: false, isVegan: false },
-  { name: "Isabella", table: "t8", seat: 0, isChild: false, isVeggie: true, isVegan: false },
-  { name: "Daniela Hofman", table: "t8", seat: 1, isChild: false, isVeggie: false, isVegan: false },
+  { name: "Emma Girault", table: "t7", seat: 3, isChild: true, isVeggie: false, isVegan: false, colors: ["gelb"] },
+  { name: "David Eiber", table: "t7", seat: 4, isChild: false, isVeggie: true, isVegan: false, colors: ["orange"] },
+  { name: "Elisa", table: "t7", seat: 5, isChild: true, isVeggie: false, isVegan: false, colors: ["lila"] },
+  { name: "Anna Heißmann", table: "t7", seat: 6, isChild: false, isVeggie: true, isVegan: false, colors: ["rot"] },
+  { name: "Marco Hofmann", table: "t7", seat: 7, isChild: false, isVeggie: false, isVegan: false, colors: ["blau"] },
+  { name: "Maikes Mann", table: "t7", seat: 8, isChild: false, isVeggie: false, isVegan: false, colors: ["gruen"] },
+  { name: "Colin Schrepfer", table: "t7", seat: 9, isChild: true, isVeggie: false, isVegan: false, colors: ["gelb"] },
+  { name: "Isabella", table: "t8", seat: 0, isChild: false, isVeggie: true, isVegan: false, colors: ["orange", "gruen"] },
+  { name: "Daniela Hofman", table: "t8", seat: 1, isChild: false, isVeggie: false, isVegan: false, colors: ["lila"] },
   { name: "Klaus Sticht", table: "t8", seat: 2, isChild: false, isVeggie: false, isVegan: false, colors: ["rot"] },
-  { name: "Mats Herrmann", table: "t8", seat: 3, isChild: false, isVeggie: false, isVegan: false },
+  { name: "Mats Herrmann", table: "t8", seat: 3, isChild: false, isVeggie: false, isVegan: false, colors: ["rot"] },
   { name: "Katrin Paulus", table: "t8", seat: 4, isChild: false, isVeggie: false, isVegan: false, colors: ["rot"] },
 ];
