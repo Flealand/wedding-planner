@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fotoliste – Barbara & Christopher</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <span class="brand">Barbara &amp; Christopher</span>
+  </header>
+
+  <main class="wide">
+    <div class="page-title">
+      <div class="eyebrow">Für die Fotosession</div>
+      <h1>Fotoliste</h1>
+      <p>Farbgruppen fürs Fotoshooting – wer gehört zu welcher Farbe, und wo sitzt die Person.</p>
+      <p class="legend-note">Die Farbzuordnung ist eine Vorabversion und noch nicht vollständig.</p>
+    </div>
+
+    <div class="staff-tables" id="color-groups"></div>
+
+    <div class="page-title" style="padding-top: 1rem;">
+      <h1 style="font-size: 1.6rem;">Sitzplan nach Farbe</h1>
+    </div>
+
+    <div class="floorplan-wrap">
+      <svg id="photo-floorplan-svg" viewBox="0 0 1000 520" role="img" aria-label="Übersicht: Fotogruppen-Farben je Tisch"></svg>
+    </div>
+
+    <div class="staff-tables" id="photo-tables"></div>
+  </main>
+
+  <footer class="site-footer">
+    Barbara &amp; Christopher · Hallermühle<br>
+    <a href="index.html" class="staff-link">Zurück zum Sitzplan</a>
+    &nbsp;·&nbsp;
+    <a href="personal.html" class="staff-link">Für das Personal</a>
+    &nbsp;·&nbsp;
+    <a href="zimmerliste.html" class="staff-link">Zimmerliste</a>
+  </footer>
+
+  <script src="seating-data.js"></script>
+  <script src="fotoliste.js"></script>
+</body>
+</html>
