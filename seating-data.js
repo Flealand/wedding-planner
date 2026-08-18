@@ -185,9 +185,9 @@ const GUESTS = [
   { name: "Katharina Waters", table: "t4", seat: 0, isChild: false, isVeggie: false, isVegan: false, colors: ["rot"] },
   { name: "Nik Waters", table: "t4", seat: 1, isChild: false, isVeggie: false, isVegan: false, colors: ["rot"] },
   { name: "Anke Schellermann", table: "t4", seat: 2, isChild: false, isVeggie: false, isVegan: false, colors: ["rot"] },
-  { name: "Fabian Schellermann", table: "t4", seat: 3, isChild: false, isVeggie: false, isVegan: false, colors: ["rot"] },
+  { name: "Maxi Schellermann", table: "t4", seat: 3, isChild: false, isVeggie: false, isVegan: false, colors: ["rot"] },
   { name: "Isabella Zuchold", table: "t4", seat: 4, isChild: false, isVeggie: true, isVegan: false, colors: ["rot"] },
-  { name: "Maxi Schellermann", table: "t4", seat: 5, isChild: false, isVeggie: false, isVegan: false, colors: ["rot"] },
+  { name: "Fabian Schellermann", table: "t4", seat: 5, isChild: false, isVeggie: false, isVegan: false, colors: ["rot"] },
   { name: "Walburga Graß", table: "t4", seat: 6, isChild: false, isVeggie: false, isVegan: false, colors: ["rot"] },
 
   // Tisch 5 — seat 3, 7 open. Marco (seat 6) sits opposite Daniela (seat 2).
