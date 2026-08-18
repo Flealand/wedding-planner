@@ -16,9 +16,11 @@
 
   const tableById = Object.fromEntries(TABLES.map((t) => [t.id, t]));
   const guestsByTable = Object.fromEntries(TABLES.map((t) => [t.id, []]));
-  GUESTS.forEach((g) => guestsByTable[g.table].push(g));
+  GUESTS.forEach((g) => {
+    if (g.table) guestsByTable[g.table].push(g);
+  });
 
-  const guestsWithColor = GUESTS.filter((g) => g.colors && g.colors.length > 0);
+  const guestsWithColor = GUESTS.filter((g) => g.table && g.colors && g.colors.length > 0);
 
   // ---------- Color group cards ----------
 

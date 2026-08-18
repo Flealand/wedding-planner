@@ -13,7 +13,9 @@
   const BADGE_LABEL = { vegan: "Vegan", veggie: "Vegetarisch", child: "Kind" };
 
   const guestsByTable = Object.fromEntries(TABLES.map((t) => [t.id, []]));
-  GUESTS.forEach((g) => guestsByTable[g.table].push(g));
+  GUESTS.forEach((g) => {
+    if (g.table) guestsByTable[g.table].push(g);
+  });
 
   // A guest can be a child AND vegan/veggie at once, so this returns however
   // many badges apply — a seat may need more than one marker.

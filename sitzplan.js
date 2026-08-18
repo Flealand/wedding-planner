@@ -14,7 +14,9 @@
   const NS = "http://www.w3.org/2000/svg";
   const tableById = Object.fromEntries(TABLES.map((t) => [t.id, t]));
   const guestsByTable = Object.fromEntries(TABLES.map((t) => [t.id, []]));
-  GUESTS.forEach((g) => guestsByTable[g.table].push(g));
+  GUESTS.forEach((g) => {
+    if (g.table) guestsByTable[g.table].push(g);
+  });
 
   function el(tag, attrs) {
     const node = document.createElementNS(NS, tag);
@@ -231,26 +233,28 @@
       return;
     }
     matches.slice(0, 8).forEach((g) => {
-      const t = tableById[g.table];
+      const t = g.table ? tableById[g.table] : null;
       const card = document.createElement("div");
       card.className = "search-result-card";
       card.tabIndex = 0;
       const tags = guestTags(g);
       card.innerHTML = `
-        <span class="result-swatch" style="background:${t.color}"></span>
+        <span class="result-swatch" style="background:${t ? t.color : "var(--text-muted)"}"></span>
         <span class="result-info">
           <span class="result-name">${g.name}</span>
-          <span class="result-table">${t.label}</span>
+          <span class="result-table">${t ? t.label : "Noch nicht platziert"}</span>
         </span>
         <span class="result-tags">${tags.map((tag) => `<span class="tag">${tag}</span>`).join("")}</span>
       `;
-      const activate = () => {
-        showTableDetail(g.table, { highlightSeat: g.seat });
-      };
-      card.addEventListener("click", activate);
-      card.addEventListener("keydown", (e) => {
-        if (e.key === "Enter") activate();
-      });
+      if (t) {
+        const activate = () => {
+          showTableDetail(g.table, { highlightSeat: g.seat });
+        };
+        card.addEventListener("click", activate);
+        card.addEventListener("keydown", (e) => {
+          if (e.key === "Enter") activate();
+        });
+      }
       resultsEl.appendChild(card);
     });
   }
@@ -264,7 +268,7 @@
     }
     const matches = GUESTS.filter((g) => normalize(g.name).includes(query));
     renderResults(matches, query);
-    if (matches.length === 1) {
+    if (matches.length === 1 && matches[0].table) {
       showTableDetail(matches[0].table, { highlightSeat: matches[0].seat, scrollTo: false });
     }
   });
