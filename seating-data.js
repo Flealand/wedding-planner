@@ -163,10 +163,10 @@ const GUESTS = [
   { name: "Elisa", table: "t7", seat: 2, isChild: true, isVeggie: false, isVegan: false, colors: ["rot"] },
   { name: "Charlotte Reuter", table: "t7", seat: 3, isChild: false, isVeggie: false, isVegan: false, colors: ["rot"] },
   { name: "Lisa Oefler", table: "t7", seat: 4, isChild: false, isVeggie: true, isVegan: false, colors: ["rot"] },
-  { name: "Thiemo Fröhlich", table: "t7", seat: 5, isChild: false, isVeggie: false, isVegan: false, colors: ["rot"] },
-  { name: "Simon Gutfleisch", table: "t7", seat: 6, isChild: false, isVeggie: true, isVegan: false, colors: ["rot"] },
-  { name: "Kindolino Piewak", table: "t7", seat: 7, isChild: true, isVeggie: false, isVegan: false, colors: ["rot"] },
-  { name: "Luisa Piewak", table: "t7", seat: 8, isChild: false, isVeggie: true, isVegan: false, colors: ["rot"] },
+  { name: "Simon Gutfleisch", table: "t7", seat: 5, isChild: false, isVeggie: true, isVegan: false, colors: ["rot"] },
+  { name: "Kindolino Piewak", table: "t7", seat: 6, isChild: true, isVeggie: false, isVegan: false, colors: ["rot"] },
+  { name: "Luisa Piewak", table: "t7", seat: 7, isChild: false, isVeggie: true, isVegan: false, colors: ["rot"] },
+  { name: "Thiemo Fröhlich", table: "t7", seat: 8, isChild: false, isVeggie: false, isVegan: false, colors: ["rot"] },
   { name: "Mats Herrmann", table: "t7", seat: 9, isChild: false, isVeggie: false, isVegan: false, colors: ["rot"] },
 
   // Tisch 6 — full (10/10).
