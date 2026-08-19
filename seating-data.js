@@ -183,7 +183,7 @@ const GUESTS = [
 
   // Tisch 4 — Christine and Robert moved to Tisch 5, Walburga moved in from Tisch 8. Seat 7 open.
   { name: "Katharina Waters", table: "t4", seat: 0, isChild: false, isVeggie: false, isVegan: false, colors: ["rot"] },
-  { name: "Nik Waters", table: "t4", seat: 1, isChild: false, isVeggie: false, isVegan: false, colors: ["rot"] },
+  { name: "Nick Waters", table: "t4", seat: 1, isChild: false, isVeggie: false, isVegan: false, colors: ["rot"] },
   { name: "Anke Schellermann", table: "t4", seat: 2, isChild: false, isVeggie: false, isVegan: false, colors: ["rot"] },
   { name: "Maxi Schellermann", table: "t4", seat: 3, isChild: false, isVeggie: false, isVegan: false, colors: ["rot"] },
   { name: "Isabella Zuchold", table: "t4", seat: 4, isChild: false, isVeggie: true, isVegan: false, colors: ["rot"] },
