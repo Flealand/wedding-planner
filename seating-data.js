@@ -154,8 +154,8 @@ const GUESTS = [
   { name: "Oli Graß", table: "brauttisch", seat: 11, isChild: false, isVeggie: false, isVegan: false, colors: ["rot"] },
   { name: "Katrin Paulus", table: "brauttisch", seat: 12, isChild: false, isVeggie: false, isVegan: false, colors: ["rot"] },
   { name: "Felix Haenlein", table: "brauttisch", seat: 13, isChild: false, isVeggie: false, isVegan: false, colors: ["rot"] },
-  { name: "Martin Weydenhammer", table: "brauttisch", seat: 14, isChild: false, isVeggie: false, isVegan: false, colors: ["rot"] },
-  { name: "Christina Hofmann", table: "brauttisch", seat: 15, isChild: false, isVeggie: true, isVegan: false, colors: ["rot"] },
+  { name: "Christina Hofmann", table: "brauttisch", seat: 14, isChild: false, isVeggie: true, isVegan: false, colors: ["rot"] },
+  { name: "Martin Weydenhammer", table: "brauttisch", seat: 15, isChild: false, isVeggie: false, isVegan: false, colors: ["rot"] },
 
   // Tisch 7 — full (10/10).
   { name: "Alexandre Girault", table: "t7", seat: 0, isChild: false, isVeggie: false, isVegan: false, colors: ["rot"] },
