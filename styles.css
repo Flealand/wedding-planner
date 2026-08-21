@@ -365,7 +365,7 @@ footer.site-footer {
 }
 
 .seat-circle {
-  stroke: rgba(255, 255, 255, 0.85);
+  stroke: rgba(13, 3, 0, 0.55);
   stroke-width: 2;
 }
 
@@ -709,7 +709,8 @@ footer.site-footer {
 }
 
 .photo-seat-circle {
-  stroke: none;
+  stroke: rgba(13, 3, 0, 0.55);
+  stroke-width: 2;
 }
 
 .photo-seat-empty {
