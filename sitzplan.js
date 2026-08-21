@@ -65,10 +65,22 @@
         );
       });
       const main = t.shapeRects[0];
-      g.appendChild(el("text", { class: "table-label", x: main.x + main.w / 2, y: main.y + main.h / 2 - 9 })).textContent =
-        t.label;
-      g.appendChild(el("text", { class: "table-sublabel", x: main.x + main.w / 2, y: main.y + main.h / 2 + 12 })).textContent =
-        `${guestsByTable[t.id].length}/${t.cap} Plätze`;
+      g.appendChild(
+        el("text", {
+          class: "table-label",
+          x: main.x + main.w / 2,
+          y: main.y + main.h / 2 - 9,
+          style: `fill: ${t.labelColors.label}`,
+        })
+      ).textContent = t.label;
+      g.appendChild(
+        el("text", {
+          class: "table-sublabel",
+          x: main.x + main.w / 2,
+          y: main.y + main.h / 2 + 12,
+          style: `fill: ${t.labelColors.sublabel}`,
+        })
+      ).textContent = `${guestsByTable[t.id].length}/${t.cap} Plätze`;
       g.addEventListener("click", () => showTableDetail(t.id, {}));
       g.addEventListener("keydown", (e) => {
         if (e.key === "Enter" || e.key === " ") {
@@ -90,27 +102,6 @@
   }
 
   // ---------- Per-table seat diagram ----------
-
-  // Photo-group color(s) for the seat only — no labels/counts here, that
-  // detail lives on the Fotoliste page. Uses the shared hex map / pie-slice
-  // math from seating-data.js.
-  function renderPhotoColorSeat(svg, cx, cy, r, colors) {
-    if (colors.length === 1) {
-      svg.appendChild(el("circle", { class: "seat-circle", cx, cy, r, fill: photoColorHex(colors[0]) }));
-      return;
-    }
-    const slice = 360 / colors.length;
-    colors.forEach((name, i) => {
-      svg.appendChild(
-        el("path", {
-          class: "seat-color-slice",
-          d: photoPieSlicePath(cx, cy, r, i * slice, (i + 1) * slice),
-          fill: photoColorHex(name),
-        })
-      );
-    });
-    svg.appendChild(el("circle", { class: "seat-color-outline", cx, cy, r }));
-  }
 
   function renderSeatDiagram(table, highlightSeatIndex) {
     seatSvg.innerHTML = "";
@@ -148,13 +139,15 @@
       const occupant = guestsByTable[table.id].find((g) => g.seat === i);
       const isHighlighted = i === highlightSeatIndex;
 
-      if (occupant && occupant.colors && occupant.colors.length > 0) {
-        renderPhotoColorSeat(seatSvg, seat.x, seat.y, 11, occupant.colors);
-      } else {
-        seatSvg.appendChild(
-          el("circle", { class: "seat-circle" + (occupant ? "" : " seat-empty"), cx: seat.x, cy: seat.y, r: 11 })
-        );
-      }
+      seatSvg.appendChild(
+        el("circle", {
+          class: "seat-circle" + (occupant ? "" : " seat-empty"),
+          cx: seat.x,
+          cy: seat.y,
+          r: 11,
+          ...(occupant ? { fill: table.color } : {}),
+        })
+      );
       if (isHighlighted) {
         seatSvg.appendChild(el("circle", { class: "seat-highlight-ring", cx: seat.x, cy: seat.y, r: 11 }));
       }

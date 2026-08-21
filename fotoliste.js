@@ -6,92 +6,43 @@
     return node;
   }
 
-  // Color hex lookup + pie-slice math live in seating-data.js (photoColorHex,
-  // photoPieSlicePath) so the main seating plan and this page always agree.
-  const colorHex = photoColorHex;
-
-  function colorLabel(name) {
-    return name.charAt(0).toUpperCase() + name.slice(1);
-  }
-
-  const tableById = Object.fromEntries(TABLES.map((t) => [t.id, t]));
   const guestsByTable = Object.fromEntries(TABLES.map((t) => [t.id, []]));
   GUESTS.forEach((g) => {
     if (g.table) guestsByTable[g.table].push(g);
   });
 
-  const guestsWithColor = GUESTS.filter((g) => g.table && g.colors && g.colors.length > 0);
+  // ---------- Table group cards ----------
+  // A guest's photo-session group is simply their table, so this list is
+  // just the tables that actually have guests, each carrying its own color.
 
-  // ---------- Color group cards ----------
-
-  function renderColorGroups() {
+  function renderTableGroups() {
     const container = document.getElementById("color-groups");
-    const groups = {};
-    guestsWithColor.forEach((g) => {
-      g.colors.forEach((c) => {
-        (groups[c] = groups[c] || []).push(g);
-      });
-    });
-    const colorNames = Object.keys(groups).sort((a, b) => a.localeCompare(b, "de"));
+    const groupTables = TABLES.filter((t) => guestsByTable[t.id].length > 0);
 
-    if (colorNames.length === 0) {
-      container.innerHTML = '<p class="staff-list-empty">Noch keine Farben zugeordnet.</p>';
+    if (groupTables.length === 0) {
+      container.innerHTML = '<p class="staff-list-empty">Noch keine Gäste zugeordnet.</p>';
       return;
     }
 
-    colorNames.forEach((color) => {
-      const guests = groups[color].slice().sort((a, b) => a.name.localeCompare(b.name, "de"));
+    groupTables.forEach((t) => {
+      const guests = guestsByTable[t.id].slice().sort((a, b) => a.name.localeCompare(b.name, "de"));
       const card = document.createElement("div");
       card.className = "staff-card";
       card.innerHTML = `
         <div class="staff-card-header">
-          <span class="result-swatch" style="background:${colorHex(color)}"></span>
-          <h3>${colorLabel(color)}</h3>
+          <span class="result-swatch" style="background:${t.color}"></span>
+          <h3>Gruppe ${t.label}</h3>
           <span class="staff-card-counts"><span class="staff-card-count">${guests.length}</span></span>
         </div>
         <ul class="staff-list">
-          ${guests
-            .map((g) => {
-              const otherColors = g.colors.filter((c) => c !== color);
-              const dots = otherColors
-                .map((c) => `<span class="color-dot" style="background:${colorHex(c)}" title="${colorLabel(c)}"></span>`)
-                .join("");
-              return `<li><span>${g.name}</span>${dots}<span class="staff-seat">${tableById[g.table].label}</span></li>`;
-            })
-            .join("")}
+          ${guests.map((g) => `<li><span>${g.name}</span></li>`).join("")}
         </ul>
       `;
       container.appendChild(card);
     });
   }
 
-  // ---------- Pie-sliced seat marker (handles 1..N colors per person) ----------
-
-  function renderColorSeat(svg, cx, cy, r, colors) {
-    if (!colors || colors.length === 0) {
-      svg.appendChild(el("circle", { class: "photo-seat-empty", cx, cy, r: 6 }));
-      return;
-    }
-    if (colors.length === 1) {
-      svg.appendChild(
-        el("circle", { class: "photo-seat-circle", cx, cy, r, fill: colorHex(colors[0]) })
-      );
-      return;
-    }
-    const slice = 360 / colors.length;
-    colors.forEach((name, i) => {
-      svg.appendChild(
-        el("path", {
-          class: "photo-seat-slice",
-          d: photoPieSlicePath(cx, cy, r, i * slice, (i + 1) * slice),
-          fill: colorHex(name),
-        })
-      );
-    });
-    svg.appendChild(el("circle", { class: "photo-seat-outline", cx, cy, r }));
-  }
-
-  // ---------- Big overview: color dot + count badge per table ----------
+  // ---------- Big overview: table label + guest count ----------
 
   function renderOverview() {
     const svg = document.getElementById("photo-floorplan-svg");
@@ -112,46 +63,27 @@
         );
       });
       const main = t.shapeRects[0];
+      const count = guestsByTable[t.id].length;
 
-      const countsByColor = {};
-      guestsByTable[t.id].forEach((g) => {
-        (g.colors || []).forEach((c) => {
-          countsByColor[c] = (countsByColor[c] || 0) + 1;
-        });
-      });
-      const colorNames = Object.keys(countsByColor).sort((a, b) => a.localeCompare(b, "de"));
-      const hasBadge = colorNames.length > 0;
-
-      const label = el("text", {
-        class: "table-label",
-        x: main.x + main.w / 2,
-        y: main.y + main.h / 2 + (hasBadge ? -11 : 0),
-      });
-      label.textContent = t.label;
-      svg.appendChild(label);
-
-      if (hasBadge) renderOverviewBadge(svg, main, colorNames, countsByColor);
-    });
-  }
-
-  function renderOverviewBadge(svg, rect, colorNames, countsByColor) {
-    const dotSize = 13;
-    const chipGap = 4;
-    const groupGap = 10;
-    const chipWidths = colorNames.map((c) => dotSize + chipGap + String(countsByColor[c]).length * 8 + 6);
-    const totalWidth = chipWidths.reduce((a, b) => a + b, 0) + groupGap * (colorNames.length - 1);
-
-    let cursorX = rect.x + rect.w / 2 - totalWidth / 2;
-    const cy = rect.y + rect.h / 2 + 13;
-
-    colorNames.forEach((color, i) => {
       svg.appendChild(
-        el("circle", { cx: cursorX + dotSize / 2, cy, r: dotSize / 2, fill: colorHex(color), stroke: "var(--surface)", "stroke-width": 1.5 })
-      );
-      const countText = el("text", { class: "overview-badge-count", x: cursorX + dotSize + chipGap, y: cy });
-      countText.textContent = `×${countsByColor[color]}`;
-      svg.appendChild(countText);
-      cursorX += chipWidths[i] + groupGap;
+        el("text", {
+          class: "table-label",
+          x: main.x + main.w / 2,
+          y: main.y + main.h / 2 + (count > 0 ? -9 : 0),
+          style: `fill: ${t.labelColors.label}`,
+        })
+      ).textContent = t.label;
+
+      if (count > 0) {
+        svg.appendChild(
+          el("text", {
+            class: "table-sublabel",
+            x: main.x + main.w / 2,
+            y: main.y + main.h / 2 + 12,
+            style: `fill: ${t.labelColors.sublabel}`,
+          })
+        ).textContent = `${count} Gäste`;
+      }
     });
   }
 
@@ -188,8 +120,12 @@
 
     table.seats.forEach((seat, i) => {
       const occupant = guestsByTable[table.id].find((g) => g.seat === i);
-      renderColorSeat(svg, seat.x, seat.y, 11, occupant ? occupant.colors : null);
-      if (!occupant || !occupant.colors || occupant.colors.length === 0) return;
+      if (occupant) {
+        svg.appendChild(el("circle", { class: "photo-seat-circle", cx: seat.x, cy: seat.y, r: 11, fill: table.color }));
+      } else {
+        svg.appendChild(el("circle", { class: "photo-seat-empty", cx: seat.x, cy: seat.y, r: 6 }));
+      }
+      if (!occupant) return;
 
       let lx = seat.x,
         ly = seat.y,
@@ -221,7 +157,7 @@
   }
 
   function renderTableCard(table) {
-    const withColor = guestsByTable[table.id].filter((g) => g.colors && g.colors.length > 0);
+    const guests = guestsByTable[table.id];
     const card = document.createElement("div");
     card.className = "staff-card";
 
@@ -233,24 +169,21 @@
     `;
     card.appendChild(header);
 
-    const svg = el("svg", { class: "staff-diagram", role: "img", "aria-label": `Farben am ${table.label}` });
+    const svg = el("svg", { class: "staff-diagram", role: "img", "aria-label": `Sitzplan ${table.label}` });
     card.appendChild(svg);
     renderTableDiagram(svg, table);
 
     const list = document.createElement("ul");
     list.className = "staff-list";
-    if (withColor.length === 0) {
-      list.innerHTML = '<li class="staff-list-empty">Noch keine Farbe zugeordnet</li>';
+    if (guests.length === 0) {
+      list.innerHTML = '<li class="staff-list-empty">Noch keine Gäste zugeordnet</li>';
     } else {
-      withColor
+      guests
         .slice()
         .sort((a, b) => a.seat - b.seat)
         .forEach((g) => {
-          const dots = g.colors
-            .map((c) => `<span class="color-dot" style="background:${colorHex(c)}" title="${colorLabel(c)}"></span>`)
-            .join("");
           const li = document.createElement("li");
-          li.innerHTML = `<span class="guest-highlighted">${g.name}</span>${dots}<span class="staff-seat">Platz ${g.seat + 1}</span>`;
+          li.innerHTML = `<span class="guest-highlighted">${g.name}</span><span class="staff-seat">Platz ${g.seat + 1}</span>`;
           list.appendChild(li);
         });
     }
@@ -258,7 +191,7 @@
     return card;
   }
 
-  renderColorGroups();
+  renderTableGroups();
   renderOverview();
   const photoTablesEl = document.getElementById("photo-tables");
   TABLES.forEach((t) => photoTablesEl.appendChild(renderTableCard(t)));

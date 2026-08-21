@@ -72,7 +72,12 @@
         );
       });
       const main = t.shapeRects[0];
-      const label = el("text", { class: "table-label", x: main.x + main.w / 2, y: main.y + main.h / 2 });
+      const label = el("text", {
+        class: "table-label",
+        x: main.x + main.w / 2,
+        y: main.y + main.h / 2,
+        style: `fill: ${t.labelColors.label}`,
+      });
       label.textContent = t.label;
       svg.appendChild(label);
 
