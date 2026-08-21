@@ -52,10 +52,10 @@ const brauttischSeats = [
 
 const RECT_TABLE_DEFS = [
   { id: "t3", label: "Tisch 2", cap: 10, color: "#828c7b", rect: { x: 20, y: 80, w: 260, h: 70 } },
-  { id: "t4", label: "Tisch 3", cap: 8, color: "#d9d0c7", rect: { x: 20, y: 170, w: 260, h: 70 } },
+  { id: "t4", label: "Tisch 3", cap: 8, color: "#697363", rect: { x: 20, y: 170, w: 260, h: 70 } },
   { id: "t5", label: "Tisch 4", cap: 8, color: "#d1a582", rect: { x: 20, y: 260, w: 260, h: 70 } },
   { id: "t6", label: "Tisch 5", cap: 10, color: "#bf8b78", rect: { x: 20, y: 350, w: 260, h: 70 } },
-  { id: "t7", label: "Tisch 6", cap: 10, color: "#d9d0c7", rect: { x: 730, y: 190, w: 230, h: 70 } },
+  { id: "t7", label: "Tisch 6", cap: 10, color: "#d1a582", rect: { x: 730, y: 190, w: 230, h: 70 } },
   { id: "t8", label: "Tisch 7", cap: 10, color: "#697363", rect: { x: 730, y: 280, w: 230, h: 70 } },
   // Fototisch has no seats any more — a prop/backdrop spot, not a guest table.
   { id: "t9", label: "Fototisch", cap: 0, color: "#0d0300", rect: { x: 730, y: 370, w: 230, h: 70 } },
@@ -88,8 +88,8 @@ const TABLES = [
     id: "brauttisch",
     label: "Tisch 1",
     cap: 16,
-    color: "#d9d0c7",
-    labelColors: tableLabelColors("#d9d0c7"),
+    color: "#ffffff",
+    labelColors: tableLabelColors("#ffffff"),
     shapeRects: [brauttischTop, brauttischLeftArm, brauttischRightArm],
     seats: brauttischSeats,
   },
