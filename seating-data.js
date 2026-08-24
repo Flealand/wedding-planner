@@ -136,7 +136,7 @@ const GUESTS = [
   { name: "Charlotte Reuter", table: "t7", seat: 3, isChild: false, isVeggie: false, isVegan: false },
   { name: "Lisa Oefler", table: "t7", seat: 4, isChild: false, isVeggie: true, isVegan: false },
   { name: "Simon Gutfleisch", table: "t7", seat: 5, isChild: false, isVeggie: true, isVegan: false },
-  { name: "Kindolino Piewak", table: "t7", seat: 6, isChild: true, isVeggie: false, isVegan: false },
+  { name: "Leonie Piewak", table: "t7", seat: 6, isChild: true, isVeggie: false, isVegan: false },
   { name: "Luisa Piewak", table: "t7", seat: 7, isChild: false, isVeggie: true, isVegan: false },
   { name: "Thiemo Fröhlich", table: "t7", seat: 8, isChild: false, isVeggie: false, isVegan: false },
   { name: "Mats Herrmann", table: "t7", seat: 9, isChild: false, isVeggie: false, isVegan: false },
