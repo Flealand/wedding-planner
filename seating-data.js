@@ -124,7 +124,7 @@ const GUESTS = [
   { name: "Nicole Knoop", table: "brauttisch", seat: 8, isChild: false, isVeggie: false, isVegan: false },
   { name: "Natalie Schönberger", table: "brauttisch", seat: 9, isChild: false, isVeggie: false, isVegan: false },
   { name: "Oli Graß", table: "brauttisch", seat: 11, isChild: false, isVeggie: false, isVegan: false },
-  { name: "Katrin Paulus", table: "brauttisch", seat: 12, isChild: false, isVeggie: false, isVegan: false },
+  { name: "Kathrin Paulus", table: "brauttisch", seat: 12, isChild: false, isVeggie: false, isVegan: false },
   { name: "Felix Haenlein", table: "brauttisch", seat: 13, isChild: false, isVeggie: false, isVegan: false },
   { name: "Christina Hofmann", table: "brauttisch", seat: 14, isChild: false, isVeggie: true, isVegan: false },
   { name: "Martin Weydenhammer", table: "brauttisch", seat: 15, isChild: false, isVeggie: false, isVegan: false },
