@@ -180,14 +180,11 @@ const GUESTS = [
   { name: "Moritz Klein", table: "t8", seat: 7, isChild: false, isVeggie: false, isVegan: false },
 
   // Tisch 2 — full (10/10).
-  { name: "David Eiber", table: "t3", seat: 0, isChild: false, isVeggie: true, isVegan: false },
-  { name: "Lisa Kraus", table: "t3", seat: 1, isChild: false, isVeggie: true, isVegan: false },
+  { name: "David Eiber", table: "t3", seat: 7, isChild: false, isVeggie: true, isVegan: false },
+  { name: "Lisa Kraus", table: "t3", seat: 7, isChild: false, isVeggie: true, isVegan: false },
   { name: "Tassilo Elsberger", table: "t3", seat: 2, isChild: false, isVeggie: true, isVegan: false },
   { name: "Anna Heißmann", table: "t3", seat: 3, isChild: false, isVeggie: true, isVegan: false },
   { name: "Gregor Hlinka", table: "t3", seat: 4, isChild: false, isVeggie: false, isVegan: false },
-  { name: "Melanie Beege", table: "t3", seat: 5, isChild: false, isVeggie: true, isVegan: false },
-  { name: "Milo", table: "t3", seat: 6, isChild: true, isVeggie: false, isVegan: false },
-  { name: "Christian Beege", table: "t3", seat: 7, isChild: false, isVeggie: false, isVegan: true },
   { name: "Thomas Trautner", table: "t3", seat: 8, isChild: false, isVeggie: false, isVegan: false },
   { name: "Marina Hlinka", table: "t3", seat: 9, isChild: false, isVeggie: false, isVegan: false },
 ];
