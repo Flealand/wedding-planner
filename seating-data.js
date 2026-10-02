@@ -130,7 +130,7 @@ const GUESTS = [
   { name: "Martin Weydenhammer", table: "brauttisch", seat: 15, isChild: false, isVeggie: false, isVegan: false },
 
   // Tisch 6 — full (10/10).
-  { name: "Simon Gutfleisch", table: "t7", seat: 1, isChild: false, isVeggie: true, isVegan: false },
+  { name: "Simon Gutfleisch", table: "t7", seat: 7, isChild: false, isVeggie: true, isVegan: false },
   { name: "Leonie Piewak", table: "t7", seat: 2, isChild: true, isVeggie: false, isVegan: false },
   { name: "Luisa Piewak", table: "t7", seat: 3, isChild: false, isVeggie: true, isVegan: false },
   { name: "Lisa Oefler", table: "t7", seat: 4, isChild: false, isVeggie: true, isVegan: false },
