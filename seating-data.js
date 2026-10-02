@@ -177,7 +177,7 @@ const GUESTS = [
 
   // Tisch 2 — full (10/10).
   { name: "David Eiber", table: "t3", seat: 7, isChild: false, isVeggie: true, isVegan: false },
-  { name: "Lisa Kraus", table: "t3", seat: 7, isChild: false, isVeggie: true, isVegan: false },
+  { name: "Lisa Kraus", table: "t3", seat: 6, isChild: false, isVeggie: true, isVegan: false },
   { name: "Tassilo Elsberger", table: "t3", seat: 2, isChild: false, isVeggie: true, isVegan: false },
   { name: "Anna Heißmann", table: "t3", seat: 3, isChild: false, isVeggie: true, isVegan: false },
   { name: "Gregor Hlinka", table: "t3", seat: 4, isChild: false, isVeggie: false, isVegan: false },
